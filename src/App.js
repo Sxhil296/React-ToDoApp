@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {AiOutlinePlus} from 'react-icons/ai'
 import Todo from "./Todo";
 import{db} from "./firebase"
-import {query, collection, onSnapshot, QuerySnapshot, updateDoc, doc, addDoc}  from 'firebase/firestore';
+import {query, collection, onSnapshot, QuerySnapshot, updateDoc, doc, addDoc, deleteDoc}  from 'firebase/firestore';
 
 
 const style = {
@@ -48,7 +48,6 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-
   //update todo in firebase
   const toggleComplete = async(todo) => {
     await updateDoc(doc(db, 'todos', todo.id), {
@@ -56,8 +55,10 @@ function App() {
     })
   }
 
-
   //delete todo
+  const deleteTodo = async (id) => {
+    await deleteDoc(doc(db, 'todos', id))
+  }
 
   return (
     <div className={style.bg}>
@@ -69,11 +70,14 @@ function App() {
     </form>
     <ul>
       {todos.map((todo, index) => (
-        <Todo key={index} todo={todo} toggleComplete={toggleComplete}/>
+        <Todo key={index} todo={todo} toggleComplete={toggleComplete} deleteTodo={deleteTodo}/>
       ))}
     
     </ul>
-    <p className={style.count}>You have 2 todos</p>
+    {todos.length < 1 ? null : (
+          <p className={style.count}>{`You have ${todos.length} todos`}</p>
+        )}
+  
     </div>
     </div>
   );
